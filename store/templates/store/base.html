@@ -13,7 +13,7 @@
    
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">E-Shop</a>
+    <a class="navbar-brand" href="/">E-Shop</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -29,21 +29,31 @@
 
 
        <ul class="navbar-nav my-2 my-lg-0"> 
+       {% if request.session.customer %}
+        
+         <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/orders">Orders</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/logout">Logout</a>
+        </li>
+        {% else %}
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Logout</a>
+          <a class="nav-link" aria-current="page" href="/cart">Cart</a>
         </li>
        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Signup</a>
+          <a class="nav-link" aria-current="page" href="/signup">Signup</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Login</a>
+          <a class="nav-link" aria-current="page" href="/login">Login</a>
         </li>
-        <li class="nav-item dropdown">
+      {% endif %}
+        {% comment %} <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Profile
           </a>
          
-        </li>
+        </li> {% endcomment %}
         
       </ul>
 
