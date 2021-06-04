@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import Product, Category,Customer
+from .models import Product, Category,Customer,Order
 from rest_framework import status
 from rest_framework.views import APIView
 from .serializers import ProductSerializer,CustomerSerializer,CategorySerializer
@@ -207,7 +207,25 @@ class Cart(View):
         products = Product.objects.filter(id__in=ids)
         print(products)
         return render(request, 'store/cart.html',{"products":products})
-        
+
+class CheckOut(View):
+    def post(self, request):
+        address = request.POST.get("address")
+        phone = request.POST.get("phone")
+        customer = request.session.get('customer')
+        cart = request.session.get('cart')
+        ids = list(cart.keys())
+        products = Product.objects.filter(id__in=ids)
+        print(address, phone, customer, cart, products)
+        for product in products:
+            order = Order(product=product,customer=Customer(id=customer),quantity=cart.get(str(product.id)),price=product.price,
+                            address=address,phone=phone)
+
+            order.save()
+        request.session['cart']  = {} 
+        # print(order)
+
+        return redirect("cart")
 
 # class signup(APIView):
 #     def get(self, request):
