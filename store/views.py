@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 from django.views import View
+from .middleware import auth_middleware
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
@@ -36,7 +38,7 @@ class Index(View):
             quantity = cart.get(product)
             if quantity:
                 if remove:
-                    if quantity <= 1:
+                    if quantity <= 1: 
                         cart.pop(product)
                     else:
                         cart[product] = quantity -  1
@@ -59,7 +61,7 @@ class Signup(View):
         return render(request, 'store/signup.html')
 
     def post(self, request):
-        postData = request.POST 
+        postData = request.POST  
         first_name = postData.get('firstname')
         last_name = postData.get('lastname')
         phone = postData.get('phone')
@@ -203,10 +205,12 @@ class Logout(View):
 
 class Cart(View):
     def get(self, request):
-        ids = list(request.session.get('cart').keys())
-        products = Product.objects.filter(id__in=ids)
-        print(products)
-        return render(request, 'store/cart.html',{"products":products})
+        cart_id = request.session.get('cart')
+        if cart_id:
+            ids = list(cart_id.keys())
+            products = Product.objects.filter(id__in=ids)
+            return render(request, 'store/cart.html', {"products": products})
+        return redirect("index")
 
 class CheckOut(View):
     def post(self, request):
@@ -226,6 +230,19 @@ class CheckOut(View):
         # print(order)
 
         return redirect("cart")
+
+
+
+
+class OrderView(View):
+    
+    @method_decorator(auth_middleware) 
+    def get(self, request): 
+        customer_id = request.session.get('customer')  
+        orders = Order.objects.filter(customer = customer_id).order_by("-date")
+        return render(request, 'store/order.html',{"orders":orders})
+        
+         
 
 # class signup(APIView):
 #     def get(self, request):
